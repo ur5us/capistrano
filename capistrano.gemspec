@@ -5,7 +5,7 @@ require "capistrano/version"
 Gem::Specification.new do |s|
 
   s.name        = "capistrano"
-  s.version     = Capistrano::Version.to_s
+  s.version     = "2.15.4"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Jamis Buck", "Lee Hambley"]
   s.email       = ["jamis@jamisbuck.org", "lee.hambley@gmail.com"]
