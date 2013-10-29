@@ -55,7 +55,7 @@ module Capistrano
       #   set :repository, "#{scm_user}@somehost:~/projects/project.git"
       #   set :remote, "#{scm_user}"
       #
-      # Then each person with deploy priveledges can add the following to their
+      # Then each person with deploy privileges can add the following to their
       # local <tt>~/.caprc</tt> file:
       #
       #   set :scm_user, 'someuser'
@@ -101,6 +101,13 @@ module Capistrano
       #
       #   set :repository, "file://."
       #   set :deploy_via, :copy
+      #
+      # It is possible to exclude build artifacts being removed by
+      # <tt>git clean</tt> via <tt>:git_clean_exclude</tt>:
+      #
+      #   set :git_clean_exclude, "path_to_my_build_artifact"
+      #   set :git_clean_exclude, ["path_to_my_build_artifact", "path_to_my_build_artifact_folder"]
+      #
       #
       # AUTHORS
       # -------
@@ -204,7 +211,12 @@ module Capistrano
 
           # Make sure there's nothing else lying around in the repository (for
           # example, a submodule that has subsequently been removed).
-          execute << "#{git} clean #{verbose} -d -x -f"
+          if variable(:git_clean_exclude)
+            clean_exclusions = Array(variable(:git_clean_exclude)).map{ |pattern| %Q(-e "#{pattern.shellescape}") }.join(' ')
+            execute << "#{git} clean #{verbose} -fdx #{clean_exclusions}"
+          else
+            execute << "#{git} clean #{verbose} -fdx"
+          end
 
           execute.join(" && ")
         end
